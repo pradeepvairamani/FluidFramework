@@ -11,5 +11,5 @@ export enum LumberEventName {
     LumberjackSchemaValidationFailure = "LumberjackSchemaValidationFailure",
 
     // Unit Testing
-    UnitTestEvent = "UnitTestEvent",
+    UnitTestEvent = "UnitTestEvents",
 }
