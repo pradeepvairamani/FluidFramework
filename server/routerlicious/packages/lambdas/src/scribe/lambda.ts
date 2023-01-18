@@ -119,10 +119,10 @@ export class ScribeLambda implements IPartitionLambda {
                 const value = baseMessage as ISequencedOperationMessage;
                 Lumberjack.info(`Processing ${value.operation.sequenceNumber} ${value.operation.type}`, getLumberBaseProperties(this.documentId, this.tenantId));
 
-                if (value.operation.sequenceNumber > 10 && value.operation.sequenceNumber < 20) {
-                    Lumberjack.info(`Skipping ${value.operation.sequenceNumber} ${value.operation.term} ${this.term}`,   getLumberBaseProperties(this.documentId, this.tenantId));
-                    continue;
-                }
+                // if (value.operation.sequenceNumber > 10 && value.operation.sequenceNumber < 20) {
+                //     Lumberjack.info(`Skipping ${value.operation.sequenceNumber} ${value.operation.term} ${this.term}`,   getLumberBaseProperties(this.documentId, this.tenantId));
+                //     continue;
+                // }
 
                 // The following block is only invoked once deli enables term flipping.
                 if (this.term && value.operation.term) {
