@@ -188,6 +188,24 @@ export class PartitionManager extends EventEmitter {
 				this.emit("error", error, errorData);
 			});
 
+			this.consumer.on("checkpoint_success", (partitionId, queuedMessage) => {
+				Lumberjack.info(`prrajen: Kafka checkpoint successful`, {
+					msgOffset: queuedMessage.offset,
+					topic: queuedMessage.topic,
+					msgPartition: queuedMessage.partition,
+					partitionId,
+				});
+			});
+
+			this.consumer.on("checkpoint_error", (partitionId, queuedMessage) => {
+				Lumberjack.error(`prrajen: Kafka checkpoint failed`, {
+					msgOffset: queuedMessage.offset,
+					topic: queuedMessage.topic,
+					msgPartition: queuedMessage.partition,
+					partitionId,
+				});
+			});
+
 			this.partitions.set(partition.partition, newPartition);
 		}
 	}

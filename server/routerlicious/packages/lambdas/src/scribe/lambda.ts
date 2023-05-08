@@ -124,6 +124,10 @@ export class ScribeLambda implements IPartitionLambda {
 		for (const baseMessage of boxcar.contents) {
 			if (baseMessage.type === SequencedOperationType) {
 				const value = baseMessage as ISequencedOperationMessage;
+				Lumberjack.info(`prrajen: Lambda Sequence number is ${this.sequenceNumber}`);
+				Lumberjack.info(
+					`prrajen: Incoming Sequence number is ${value.operation.sequenceNumber}`,
+				);
 
 				// Skip messages that were already checkpointed on a prior run.
 				if (value.operation.sequenceNumber <= this.sequenceNumber) {
@@ -757,7 +761,8 @@ export class ScribeLambda implements IPartitionLambda {
 						...getLumberBaseProperties(this.documentId, this.tenantId),
 						checkpointReason: "IdleTime",
 						lastOffset: initialScribeCheckpointMessage.offset,
-						deliCheckpointOffset: this.checkpointInfo.currentCheckpointMessage?.offset,
+						scribeCheckpointOffset:
+							this.checkpointInfo.currentCheckpointMessage?.offset,
 						deliCheckpointPartition:
 							this.checkpointInfo.currentCheckpointMessage?.partition,
 						kafkaCheckpointOffset:

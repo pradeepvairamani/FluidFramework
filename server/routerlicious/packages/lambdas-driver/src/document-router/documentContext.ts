@@ -12,6 +12,7 @@ import {
 	IContextErrorData,
 	IRoutingKey,
 } from "@fluidframework/server-services-core";
+import { Lumberjack } from "@fluidframework/server-services-telemetry";
 
 export class DocumentContext extends EventEmitter implements IContext {
 	// We track two offsets - head and tail. Head represents the largest offset related to this document we
@@ -84,6 +85,13 @@ export class DocumentContext extends EventEmitter implements IContext {
 			`${offset} > ${this.tail.offset} && ${offset} <= ${this.head.offset} ` +
 				`(${message.topic}, ${message.partition}, ${this.routingKey.tenantId}/${this.routingKey.documentId})`,
 		);
+		Lumberjack.info(`prrajen: Came to documentcontext`, {
+			docId: this.routingKey.documentId,
+			tenantId: this.routingKey.tenantId,
+			msgOffset: message.offset,
+			topic: message.topic,
+			msgPartition: message.partition,
+		});
 
 		// Update the tail and broadcast the checkpoint
 		this.tailInternal = message;

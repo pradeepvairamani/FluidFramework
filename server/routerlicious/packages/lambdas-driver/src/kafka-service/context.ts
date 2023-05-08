@@ -10,6 +10,7 @@ import {
 	ILogger,
 	IContextErrorData,
 } from "@fluidframework/server-services-core";
+import { Lumberjack } from "@fluidframework/server-services-telemetry";
 import { CheckpointManager } from "./checkpointManager";
 
 export class Context extends EventEmitter implements IContext {
@@ -30,16 +31,25 @@ export class Context extends EventEmitter implements IContext {
 			return;
 		}
 
-		this.checkpointManager.checkpoint(queuedMessage).catch((error) => {
-			if (this.closed) {
-				// don't emit errors after closing
-				return;
-			}
+		this.checkpointManager
+			.checkpoint(queuedMessage)
+			.then(() => {
+				Lumberjack.info(`prrajen: Finished checkpointing in context.ts`, {
+					msgOffset: queuedMessage.offset,
+					topic: queuedMessage.topic,
+					msgPartition: queuedMessage.partition,
+				});
+			})
+			.catch((error) => {
+				if (this.closed) {
+					// don't emit errors after closing
+					return;
+				}
 
-			// Close context on error. Once the checkpointManager enters an error state it will stay there.
-			// We will look to restart on checkpointing given it likely indicates a Kafka connection issue.
-			this.error(error, { restart: true });
-		});
+				// Close context on error. Once the checkpointManager enters an error state it will stay there.
+				// We will look to restart on checkpointing given it likely indicates a Kafka connection issue.
+				this.error(error, { restart: true });
+			});
 	}
 
 	/**
